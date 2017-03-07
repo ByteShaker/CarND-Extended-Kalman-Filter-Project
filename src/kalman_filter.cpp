@@ -1,4 +1,5 @@
 #include "kalman_filter.h"
+#include <iostream>
 
 KalmanFilter::KalmanFilter() {}
 
@@ -45,12 +46,14 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
   float vx = x_[2];
   float vy = x_[3];
 
-  float rho = sqrt(pow(px,2) + pow(px,2));
+  float rho = sqrt(pow(px,2) + pow(py,2));
   float phi = atan(py/px);
   float rho_dot = (px*vx + py*vy)/rho;
 
   VectorXd z_pred(3);
   z_pred << rho, phi, rho_dot;
+
+  //std::cout << "z_ = " << z_pred << std::endl;
 
   VectorXd y = z - z_pred;
   MatrixXd Ht = H_.transpose();

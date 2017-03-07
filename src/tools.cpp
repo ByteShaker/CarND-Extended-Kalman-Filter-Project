@@ -53,23 +53,22 @@ MatrixXd Tools::CalculateJacobian(const VectorXd& x_state) {
     float vy = x_state(3);
 
     float val1 = pow(px,2) + pow(py,2);
+
+
+    //check division by zero
+    if (fabs(val1) < 0.0001)
+    {
+        cout << "CalculateJacobian () - Error - Division by Zero";
+        val1 = 0.0001;
+    }
+
     float val2 = sqrt(val1);
     float val3 = (val1*val2);
 
-    //check division by zero
-    if (fabs(val1) == 0)
-    {
-        cout << "CalculateJacobian () - Error - Division by Zero";
-        Hj <<   0, 0, 0, 0,
-                0, 0, 0, 0,
-                0, 0, 0, 0;
-    }else{
-        //compute the Jacobian matrix
-        Hj <<   px / val2, py / val2, 0, 0,
-                -py / val1, px / val1, 0, 0,
-                (py*(vx*py - vy*px))/ val3, (px*(vy*px - vx*py)) / val3, px / val2, py / val2;
-
-    }
+    //compute the Jacobian matrix
+    Hj <<   px / val2, py / val2, 0, 0,
+            -py / val1, px / val1, 0, 0,
+            (py*(vx*py - vy*px))/ val3, (px*(vy*px - vx*py)) / val3, px / val2, py / val2;
 
     return Hj;
 }

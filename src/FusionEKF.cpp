@@ -21,8 +21,10 @@ FusionEKF::FusionEKF() {
     * Finish initializing the FusionEKF.
     */
 
-    float sigma_2_laser = 2;
-    float sigma_2_radar = 2000;
+    float sigma_2_laser = 0.0225;
+    float sigma_2_radar_rho = 0.0255;
+    float sigma_2_radar_phi = 0.0255;
+    float sigma_2_radar_speed = 0.0255;
 
     // initializing matrices
     R_laser_ = MatrixXd(2, 2);
@@ -30,9 +32,9 @@ FusionEKF::FusionEKF() {
                 0, sigma_2_laser;
 
     R_radar_ = MatrixXd(3, 3);
-    R_radar_ << sigma_2_radar, 0, 0,
-                0, sigma_2_radar, 0,
-                0, 0, sigma_2_radar/100;
+    R_radar_ << sigma_2_radar_rho, 0, 0,
+                0, sigma_2_radar_phi, 0,
+                0, 0, sigma_2_radar_speed;
 
 
     H_laser_ = MatrixXd(2, 4);
@@ -74,8 +76,8 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
 
         //state covariance matrix P
         ekf_.P_ = MatrixXd(4, 4);
-        ekf_.P_ <<  10, 0, 0, 0,
-                    0, 10, 0, 0,
+        ekf_.P_ <<  1, 0, 0, 0,
+                    0, 1, 0, 0,
                     0, 0, 1000, 0,
                     0, 0, 0, 1000;
 
@@ -91,7 +93,7 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
             float py = sin(phi) * rho;
             float vx = cos(phi) * rho_dot;
             float vy = sin(phi) * rho_dot;
-            ekf_.x_ << px, py, vx, vy;
+            ekf_.x_ << px, py, 0, 0;
         }
         else if (measurement_pack.sensor_type_ == MeasurementPackage::LASER) {
             float px = measurement_pack.raw_measurements_[0];
@@ -102,7 +104,9 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
         }
 
         // done initializing, no need to predict or update
-        is_initialized_ = true;
+        if (ekf_.x_[0] != 0 || ekf_.x_[1]!=0){
+            is_initialized_ = true;
+        }
         return;
     }
 
