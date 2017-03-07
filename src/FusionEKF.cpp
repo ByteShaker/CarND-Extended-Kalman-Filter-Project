@@ -128,8 +128,8 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
     float dt_3 = pow(dt,3);
     float dt_4 = pow(dt,4);
 
-    float noise_ax = 5;
-    float noise_ay = 5;
+    float noise_ax = 4.5;
+    float noise_ay = 4.5;
 
     //Modify the F matrix so that the time is integrated
     ekf_.F_(0, 2) = dt;
