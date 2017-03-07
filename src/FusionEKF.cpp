@@ -21,8 +21,8 @@ FusionEKF::FusionEKF() {
     * Finish initializing the FusionEKF.
     */
 
-    float sigma_2_laser = 0.0225;
-    float sigma_2_radar = 0.0225;
+    float sigma_2_laser = 2;
+    float sigma_2_radar = 2000;
 
     // initializing matrices
     R_laser_ = MatrixXd(2, 2);
@@ -30,9 +30,9 @@ FusionEKF::FusionEKF() {
                 0, sigma_2_laser;
 
     R_radar_ = MatrixXd(3, 3);
-    R_radar_ << 0.09, 0, 0,
-                0, 0.001, 0,
-                0, 0, 5;
+    R_radar_ << sigma_2_radar, 0, 0,
+                0, sigma_2_radar, 0,
+                0, 0, sigma_2_radar/100;
 
 
     H_laser_ = MatrixXd(2, 4);
@@ -74,8 +74,8 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
 
         //state covariance matrix P
         ekf_.P_ = MatrixXd(4, 4);
-        ekf_.P_ <<  1, 0, 0, 0,
-                    0, 1, 0, 0,
+        ekf_.P_ <<  10, 0, 0, 0,
+                    0, 10, 0, 0,
                     0, 0, 1000, 0,
                     0, 0, 0, 1000;
 
@@ -117,7 +117,7 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
      * Update the process noise covariance matrix.
     */
     float dt = (measurement_pack.timestamp_ - previous_timestamp_) / 1000000.0;	//dt - expressed in seconds
-    cout << dt << endl;
+    //cout << dt << endl;
     previous_timestamp_ = measurement_pack.timestamp_;
 
     float dt_2 = pow(dt,2);
@@ -153,7 +153,6 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
     if (measurement_pack.sensor_type_ == MeasurementPackage::RADAR) {
     // Radar updates
         Hj_ = tools.CalculateJacobian(ekf_.x_);
-        cout << Hj_;
         ekf_.R_ = R_radar_;
         ekf_.H_ = Hj_;
         ekf_.UpdateEKF(measurement_pack.raw_measurements_);
@@ -165,6 +164,6 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
     }
 
     // print the output
-    cout << "x_ = " << ekf_.x_ << endl;
+    //cout << "x_ = " << ekf_.x_ << endl;
     //cout << "P_ = " << ekf_.P_ << endl;
 }

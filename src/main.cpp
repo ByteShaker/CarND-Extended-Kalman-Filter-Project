@@ -80,7 +80,6 @@ int main(int argc, char* argv[]) {
     iss >> sensor_type;
     if (sensor_type.compare("L") == 0) {
       // LASER MEASUREMENT
-      continue;
       // read measurements at this timestamp
       meas_package.sensor_type_ = MeasurementPackage::LASER;
       meas_package.raw_measurements_ = VectorXd(2);
@@ -132,7 +131,7 @@ int main(int argc, char* argv[]) {
 
   //Call the EKF-based fusion
   size_t N = measurement_pack_list.size();
-  for (size_t k = 0; k < N; ++k) {
+  for (size_t k = 1; k < N; ++k) {
     // start filtering from the second frame (the speed is unknown in the first
     // frame)
     fusionEKF.ProcessMeasurement(measurement_pack_list[k]);
