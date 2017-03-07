@@ -57,19 +57,18 @@ MatrixXd Tools::CalculateJacobian(const VectorXd& x_state) {
     float val3 = (val1*val2);
 
     //check division by zero
-    if (val1 == 0)
+    if (fabs(val1) == 0)
     {
         cout << "CalculateJacobian () - Error - Division by Zero";
+        Hj <<   0, 0, 0, 0,
+                0, 0, 0, 0,
+                0, 0, 0, 0;
     }else{
         //compute the Jacobian matrix
-        Hj(0,0) = px / val2;
-        Hj(0,1) = py / val2;
-        Hj(1,0) = -py / val1;
-        Hj(1,1) = px / val1;
-        Hj(2,0) = py*(vx*py - vy*px) / val3;
-        Hj(2,1) = px*(vy*px - vx*py) / val3;
-        Hj(2,2) = px / val2;
-        Hj(2,3) = py / val2;
+        Hj <<   px / val2, py / val2, 0, 0,
+                -py / val1, px / val1, 0, 0,
+                py*(vx*py - vy*px) / val3, px*(vy*px - vx*py) / val3, px / val2, py / val2;
+
     }
 
     return Hj;

@@ -80,7 +80,7 @@ int main(int argc, char* argv[]) {
     iss >> sensor_type;
     if (sensor_type.compare("L") == 0) {
       // LASER MEASUREMENT
-
+      continue;
       // read measurements at this timestamp
       meas_package.sensor_type_ = MeasurementPackage::LASER;
       meas_package.raw_measurements_ = VectorXd(2);
@@ -94,17 +94,16 @@ int main(int argc, char* argv[]) {
       measurement_pack_list.push_back(meas_package);
     } else if (sensor_type.compare("R") == 0) {
       // RADAR MEASUREMENT
-
       // read measurements at this timestamp
       meas_package.sensor_type_ = MeasurementPackage::RADAR;
       meas_package.raw_measurements_ = VectorXd(3);
-      float ro;
+      float rho;
       float theta;
-      float ro_dot;
-      iss >> ro;
+      float rho_dot;
+      iss >> rho;
       iss >> theta;
-      iss >> ro_dot;
-      meas_package.raw_measurements_ << ro, theta, ro_dot;
+      iss >> rho_dot;
+      meas_package.raw_measurements_ << rho, theta, rho_dot;
       iss >> timestamp;
       meas_package.timestamp_ = timestamp;
       measurement_pack_list.push_back(meas_package);
@@ -151,10 +150,10 @@ int main(int argc, char* argv[]) {
       out_file_ << measurement_pack_list[k].raw_measurements_(1) << "\t";
     } else if (measurement_pack_list[k].sensor_type_ == MeasurementPackage::RADAR) {
       // output the estimation in the cartesian coordinates
-      float ro = measurement_pack_list[k].raw_measurements_(0);
+      float rho = measurement_pack_list[k].raw_measurements_(0);
       float phi = measurement_pack_list[k].raw_measurements_(1);
-      out_file_ << ro * cos(phi) << "\t"; // p1_meas
-      out_file_ << ro * sin(phi) << "\t"; // ps_meas
+      out_file_ << rho * cos(phi) << "\t"; // p1_meas
+      out_file_ << rho * sin(phi) << "\t"; // ps_meas
     }
 
     // output the ground truth packages
