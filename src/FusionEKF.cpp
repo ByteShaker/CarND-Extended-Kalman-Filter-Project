@@ -22,9 +22,9 @@ FusionEKF::FusionEKF() {
     */
 
     float sigma_2_laser = .0225;
-    float sigma_2_radar_rho = .09 *sqrt(2);
-    float sigma_2_radar_phi = 0.0002;
-    float sigma_2_radar_speed = .02 *sqrt(2);
+    float sigma_2_radar_rho = .09;
+    float sigma_2_radar_phi = 0.0009;
+    float sigma_2_radar_speed = .09;
 
     // initializing matrices
     R_laser_ = MatrixXd(2, 2);
@@ -98,11 +98,9 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
         else if (measurement_pack.sensor_type_ == MeasurementPackage::LASER) {
             float px = measurement_pack.raw_measurements_[0];
             float py = measurement_pack.raw_measurements_[1];
-            float vx = 0;
-            float vy = 0;
+            float vx = 0.;
+            float vy = 0.;
             ekf_.x_ << px, py, vx, vy;
-
-            return;
 
         }
 
@@ -131,8 +129,8 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
     float dt_3 = pow(dt,3);
     float dt_4 = pow(dt,4);
 
-    float noise_ax = 5;
-    float noise_ay = 5;
+    float noise_ax = 8;
+    float noise_ay = 8;
 
     //Modify the F matrix so that the time is integrated
     ekf_.F_(0, 2) = dt;
